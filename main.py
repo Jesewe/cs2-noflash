@@ -5,7 +5,7 @@ init(autoreset=True)
 
 ctypes.windll.kernel32.SetConsoleTitleW("CS2 NoFlash Script | ItsJesewe")
 
-dwLocalPlayerPawn = 24355768 # Offset : https://github.com/sezzyaep/CS2-OFFSETS/blob/main/offsets.json
+dwLocalPlayerPawn = 24368552 # Offset : https://github.com/sezzyaep/CS2-OFFSETS/blob/main/offsets.json
 m_flFlashMaxAlpha = 4960 # Offset : https://github.com/sezzyaep/CS2-OFFSETS/blob/main/client.dll.json
 
 def noflash():
