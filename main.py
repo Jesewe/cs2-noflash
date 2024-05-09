@@ -1,12 +1,16 @@
 import pymem, pymem.process, time, ctypes
 from colorama import Fore, init
+from requests import get
 
 init(autoreset=True)
 
 ctypes.windll.kernel32.SetConsoleTitleW("CS2 NoFlash Script | ItsJesewe")
 
-dwLocalPlayerPawn = 24368552 # Offset : https://github.com/sezzyaep/CS2-OFFSETS/blob/main/offsets.json
-m_flFlashMaxAlpha = 4960 # Offset : https://github.com/sezzyaep/CS2-OFFSETS/blob/main/client.dll.json
+offset = get("https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/main/offsets.json").json()
+client = get("https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/main/client.dll.json").json()
+
+dwLocalPlayerPawn = offset["client.dll"]["dwLocalPlayerPawn"]
+m_flFlashMaxAlpha = client["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashMaxAlpha"]
 
 def noflash():
     try:
