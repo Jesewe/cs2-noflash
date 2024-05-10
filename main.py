@@ -6,8 +6,8 @@ init(autoreset=True)
 
 ctypes.windll.kernel32.SetConsoleTitleW("CS2 NoFlash Script | ItsJesewe")
 
-offset = get("https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/main/offsets.json").json()
-client = get("https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/main/client.dll.json").json()
+offset = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json").json()
+client = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client.dll.json").json()
 
 dwLocalPlayerPawn = offset["client.dll"]["dwLocalPlayerPawn"]
 m_flFlashMaxAlpha = client["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashMaxAlpha"]

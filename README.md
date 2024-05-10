@@ -6,6 +6,7 @@ This Python script is designed to remove the flash effect in the game CS2 by mod
 - Python 3.x
 - `pymem` library
 - `colorama` library
+- `requests` library
 
 ## Installation
 1. Install Python 3.x from the official website.
