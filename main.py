@@ -1,38 +1,71 @@
-import pymem, pymem.process, time, ctypes
-from colorama import Fore, init
+import pymem
+import pymem.process
+import time
+import ctypes
+import logging
 from requests import get
-
-init(autoreset=True)
 
 ctypes.windll.kernel32.SetConsoleTitleW("CS2 NoFlash Script | ItsJesewe")
 
-offset = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json").json()
-client = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client.dll.json").json()
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-dwLocalPlayerPawn = offset["client.dll"]["dwLocalPlayerPawn"]
-m_flFlashMaxAlpha = client["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashMaxAlpha"]
-
-def noflash():
+# Fetch offsets and client data
+def fetch_offsets():
     try:
-        print(Fore.YELLOW + "[*] Searching for cs2.exe process...\n")
+        offset = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json").json()
+        client = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client.dll.json").json()
+        return offset, client
+    except Exception as e:
+        logging.error(f"Failed to fetch offsets: {e}")
+        return None, None
+
+def initialize_pymem():
+    try:
         pm = pymem.Pymem("cs2.exe")
         client_module = pymem.process.module_from_name(pm.process_handle, "client.dll").lpBaseOfDll
+        return pm, client_module
     except pymem.exception.ProcessNotFound:
-        print(Fore.RED + '[*] cs2.exe process is not running!')
+        logging.error('cs2.exe process is not running!')
     except pymem.exception.ProcessError:
-        print(Fore.RED + '[*] Error accessing process cs2.exe')
+        logging.error('Error accessing process cs2.exe')
     except pymem.exception.MemoryReadError:
-        print(Fore.RED + '[*] Error reading memory')
+        logging.error('Error reading memory')
     except pymem.exception.MemoryWriteError:
-        print(Fore.RED + '[*] Error writing memory')
+        logging.error('Error writing memory')
     except AttributeError:
-        print(Fore.RED + '[*] Byte pattern not found')
-    else:
-        print(Fore.GREEN + "[*] cs2.exe is running.\n\n[*] Client loaded...")
-        player_position = pm.read_longlong(client_module + dwLocalPlayerPawn)
-        pm.write_int(player_position + m_flFlashMaxAlpha, 0)
-    finally:
-        input('\n[*] All done, you can close this window by pressing Enter...')
+        logging.error('Byte pattern not found')
+    return None, None
+
+def noflash_loop(pm, client_module, dwLocalPlayerPawn, m_flFlashMaxAlpha):
+    try:
+        while True:
+            player_position = pm.read_longlong(client_module + dwLocalPlayerPawn)
+            if player_position:
+                pm.write_float(player_position + m_flFlashMaxAlpha, 0.0)
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        logging.info("NoFlash script terminated by user.")
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+
+def main():
+    logging.info("Fetching offsets and client data...")
+    offsets, client = fetch_offsets()
+    if not offsets or not client:
+        return
+
+    global dwLocalPlayerPawn, m_flFlashMaxAlpha
+    dwLocalPlayerPawn = offsets["client.dll"]["dwLocalPlayerPawn"]
+    m_flFlashMaxAlpha = client["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashMaxAlpha"]
+
+    logging.info("Searching for cs2.exe process...")
+    pm, client_module = initialize_pymem()
+    if not pm or not client_module:
+        return
+
+    logging.info("cs2.exe is running.")
+    noflash_loop(pm, client_module, dwLocalPlayerPawn, m_flFlashMaxAlpha)
 
 if __name__ == "__main__":
-    noflash()
+    main()
