@@ -14,6 +14,7 @@ This script disables the flashbang effect in Counter-Strike 2 by continuously se
 - Python 3.7+
 - `pymem`
 - `requests`
+- `packaging`
 
 ## Installation
 
@@ -27,7 +28,7 @@ This script disables the flashbang effect in Counter-Strike 2 by continuously se
 2. Install the required Python libraries.
 
    ```sh
-   pip install pymem requests
+   pip install pymem requests packaging
    ```
 
 3. Run the script.
