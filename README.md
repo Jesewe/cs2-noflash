@@ -8,13 +8,6 @@
    <a href="#customization"><strong>Customization</strong></a> •
    <a href="#troubleshooting"><strong>Troubleshooting</strong></a> •
    <a href="#contributing"><strong>Contributing</strong></a>
-   <br><br>
-   <p><strong>🌍 Translations:</strong></p>
-   <a href="README.ru.md"><img src="https://img.shields.io/badge/lang-Russian-purple?style=for-the-badge&logo=googletranslate"></a>
-   <a href="README.fr.md"><img src="https://img.shields.io/badge/lang-French-purple?style=for-the-badge&logo=googletranslate"></a>
-   <a href="README.es.md"><img src="https://img.shields.io/badge/lang-Spanish-purple?style=for-the-badge&logo=googletranslate"></a>
-   <a href="README.uk-UA.md"><img src="https://img.shields.io/badge/lang-Ukrainian-purple?style=for-the-badge&logo=googletranslate"></a>
-   <a href="README.pl.md"><img src="https://img.shields.io/badge/lang-Polish-purple?style=for-the-badge&logo=googletranslate"></a>
 </div>
 
 ---
@@ -25,8 +18,8 @@ CS2 NoFlash is an automated tool designed for Counter-Strike 2 that prevents the
 ## Features
 - **Anti-Flash Protection:** Automatically sets the flashbang alpha value to 0, preventing the player from being fully blinded.
 - **Process Attachment:** Attaches to the `cs2.exe` process and reads memory values to apply real-time changes.
-- **Update Checker:** Automatically checks for the latest version and notifies the user if an update is available.
-- **Error Logging:** Logs errors and important events to a log file for debugging purposes.
+- **Logging**: Detailed logs are saved in `%LOCALAPPDATA%\Requests\ItsJesewe\crashes\nf_logs.log`.
+- **Update Checker**: Automatically checks for updates from the GitHub repository.
 
 ## Installation
 1. **Clone the Repository:**
@@ -50,9 +43,6 @@ CS2 NoFlash is an automated tool designed for Counter-Strike 2 that prevents the
 2. Execute the script using the command above.
 3. The script will automatically check for updates and fetch the necessary offsets from the provided sources.
 4. The NoFlash protection will start automatically, reducing the flashbang effect to minimal.
-
-## Customization
-- **Log Directory:** The log files are saved in the `%LOCALAPPDATA%\Requests\ItsJesewe\crashes` directory by default. You can change this by modifying the `LOG_DIRECTORY` variable in the script.
 
 ## Troubleshooting
 - **Failed to Fetch Offsets:** Ensure you have an active internet connection and that the source URLs are accessible.
