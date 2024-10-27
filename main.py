@@ -86,6 +86,8 @@ class Utility:
             latest_version = response.json()[0]["name"]
             if version.parse(latest_version) > version.parse(current_version):
                 logging.warning(f"{Fore.YELLOW}New version available: {latest_version}. Please update for the latest fixes and features.")
+            elif version.parse(current_version) > version.parse(latest_version):
+                logging.info(f"{Fore.YELLOW}Developer version: You are using a pre-release or developer version.")
             else:
                 logging.info(f"{Fore.GREEN}You are using the latest version.")
         except Exception as e:
@@ -102,39 +104,51 @@ class PymemHandler:
     def initialize_pymem(self):
         """Initializes Pymem and attaches to the game process."""
         try:
-            self.pm = pymem.Pymem(self.process_name)
+            self.pm = pymem.Pymem("cs2.exe")
+            logging.info(f"{Fore.GREEN}Successfully attached to cs2.exe process.")
+        except pymem.exception.ProcessNotFound:
+            logging.error(f"{Fore.RED}Could not find cs2.exe process. Please make sure the game is running.")
         except pymem.exception.PymemError as e:
-            logging.error(f"{Fore.RED}Could not open {self.process_name}: {e}")
-            return False
-        return True
+            logging.error(f"{Fore.RED}Pymem encountered an error: {e}")
+        except Exception as e:
+            logging.error(f"{Fore.RED}Unexpected error during Pymem initialization: {e}")
+        return self.pm is not None
 
-    def get_client_module(self, module_name="client.dll"):
+    def get_client_module(self):
         """Retrieves the client.dll module base address."""
-        client_module = pymem.process.module_from_name(self.pm.process_handle, module_name)
-        if not client_module:
-            logging.error(f"{Fore.RED}Could not find {module_name} module.")
-            return False
-        self.client_base = client_module.lpBaseOfDll
-        return True
+        try:
+            if self.client_base is None:
+                client_module = pymem.process.module_from_name(self.pm.process_handle, "client.dll")
+                if not client_module:
+                    raise pymem.exception.ModuleNotFoundError("client.dll not found")
+                self.client_base = client_module.lpBaseOfDll
+                logging.info(f"{Fore.GREEN}client.dll module found at {hex(self.client_base)}.")
+        except pymem.exception.ModuleNotFoundError as e:
+            logging.error(f"{Fore.RED}Error: {e}. Ensure client.dll is loaded.")
+        except Exception as e:
+            logging.error(f"{Fore.RED}Unexpected error retrieving client module: {e}")
+        return self.client_base is not None
 
 class NoFlashScript:
     """Main class for the CS2 NoFlash functionality."""
     
-    VERSION = "v1.0.7"
+    VERSION = "v1.0.8"
 
     def __init__(self):
         """Initializes the NoFlashScript with necessary attributes."""
         self.pymem_handler = PymemHandler()
         self.dwLocalPlayerPawn = None
-        self.m_flFlashMaxAlpha = None
+        self.m_flFlashDuration = None
         self.is_running = False
 
     def start(self):
         """Starts the main loop of the NoFlashScript."""
         Utility.set_console_title(f"CS2 NoFlash {self.VERSION}")
-        Utility.check_for_updates(self.VERSION)
-        logging.info(f"{Fore.CYAN}Fetching offsets and client data...")
 
+        logging.info(f"{Fore.CYAN}Checking for updates...")
+        Utility.check_for_updates(self.VERSION)
+
+        logging.info(f"{Fore.CYAN}Fetching offsets and client data...")
         offsets, client_data = Utility.fetch_offsets()
         if offsets is None or client_data is None:
             input(f"{Fore.RED}Press Enter to exit...")
@@ -142,7 +156,7 @@ class NoFlashScript:
 
         # Set offsets and client data
         self.dwLocalPlayerPawn = offsets["client.dll"]["dwLocalPlayerPawn"]
-        self.m_flFlashMaxAlpha = client_data["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashMaxAlpha"]
+        self.m_flFlashDuration = client_data["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashMaxAlpha"]
         
         logging.info(f"{Fore.CYAN}Searching for cs2.exe process...")
         if not self.pymem_handler.initialize_pymem():
@@ -154,20 +168,18 @@ class NoFlashScript:
             return
 
         logging.info(f"{Fore.GREEN}NoFlash script started.")
-        self.is_running = True
         self.run_noflash_loop()
 
     def run_noflash_loop(self):
         """Runs the main loop of the NoFlash script."""
         try:
-            while self.is_running:
+            while True:
                 player_position = self.pymem_handler.pm.read_longlong(self.pymem_handler.client_base + self.dwLocalPlayerPawn)
                 if player_position:
-                    self.pymem_handler.pm.write_float(player_position + self.m_flFlashMaxAlpha, 0.0)
+                    self.pymem_handler.pm.write_float(player_position + self.m_flFlashDuration, 0.0)
                 time.sleep(0.1)
         except KeyboardInterrupt:
             logging.info(f"{Fore.YELLOW}NoFlash script terminated by user.")
-            self.is_running = False
         except Exception as e:
             logging.error(f"{Fore.RED}Unexpected error: {e}")
             input(f"{Fore.RED}Press Enter to exit...")

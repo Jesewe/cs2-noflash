@@ -1,4 +1,4 @@
 pymem
 requests
-packaging
 colorama
+packaging
