@@ -1,6 +1,6 @@
 <div align="center">
    <img src="src/img/icon.png" alt="CS2 NoFlash" width="200" height="200">
-   <h1>🌟 CS2 NoFlash 🌟</h1>
+   <h1>CS2 NoFlash</h1>
    <p>Your ultimate anti-flash tool for Counter-Strike 2</p>
    <a href="#features"><strong>Features</strong></a> •
    <a href="#installation"><strong>Installation</strong></a> •

@@ -156,7 +156,7 @@ class NoFlashScript:
 
         # Set offsets and client data
         self.dwLocalPlayerPawn = offsets["client.dll"]["dwLocalPlayerPawn"]
-        self.m_flFlashDuration = client_data["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashMaxAlpha"]
+        self.m_flFlashDuration = client_data["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashDuration"]
         
         logging.info(f"{Fore.CYAN}Searching for cs2.exe process...")
         if not self.pymem_handler.initialize_pymem():
