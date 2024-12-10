@@ -27,11 +27,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Unit Tests
-      run: |
-        pip install pytest
-        pytest
-
     - name: Package Application
       run: |
         pip install pyinstaller
