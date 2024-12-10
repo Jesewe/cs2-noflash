@@ -27,11 +27,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Program Check
-      run: |
-        python main.py
-      continue-on-error: true
-
     - name: Package Application
       run: |
         pip install pyinstaller
