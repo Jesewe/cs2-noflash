@@ -1,13 +1,7 @@
-import pymem
-import pymem.process
-import time
-import logging
+import pymem, pymem.process, time, logging, os, ctypes
 from requests import get
 from packaging import version
 from colorama import init, Fore
-import json
-import os
-import ctypes
 
 # Initialize colorama for colored console output
 init(autoreset=True)
@@ -26,16 +20,12 @@ class Logger:
             pass
         logging.basicConfig(
             level=logging.INFO,
-            format='%(levelname)s: %(message)s',
+            format='[%(asctime)s %(levelname)s]: %(message)s',
             handlers=[logging.FileHandler(Logger.LOG_FILE), logging.StreamHandler()]
         )
 
 class Utility:
     """Contains utility functions for the application."""
-
-    CACHE_DIRECTORY = os.path.expandvars(r'%LOCALAPPDATA%\Requests\ItsJesewe')
-    CACHE_FILE = os.path.join(CACHE_DIRECTORY, 'offsets_cache.json')
-    
     @staticmethod
     def set_console_title(title):
         """Sets the console window title."""
@@ -55,26 +45,9 @@ class Utility:
             offset = response_offset.json()
             client = response_client.json()
 
-            if os.path.exists(Utility.CACHE_FILE):
-                with open(Utility.CACHE_FILE, 'r') as f:
-                    cached_data = json.load(f)
-                
-                if cached_data.get('offsets') != offset or cached_data.get('client') != client:
-                    logging.info(f"{Fore.YELLOW}Offsets have changed, updating cache...")
-                    with open(Utility.CACHE_FILE, 'w') as f:
-                        json.dump({'offsets': offset, 'client': client}, f)
-                else:
-                    logging.info(f"{Fore.CYAN}Using cached offsets.")
-                    return cached_data['offsets'], cached_data['client']
-            else:
-                os.makedirs(Utility.CACHE_DIRECTORY, exist_ok=True)
-                with open(Utility.CACHE_FILE, 'w') as f:
-                    json.dump({'offsets': offset, 'client': client}, f)
-
             return offset, client
         except Exception as e:
             logging.error(f"{Fore.RED}Failed to fetch offsets: {e}")
-            logging.error(f"{Fore.RED}Please report this issue on the GitHub repository: https://github.com/Jesewe/cs2-noflash/issues")
             return None, None
 
     @staticmethod
@@ -159,11 +132,7 @@ class NoFlashScript:
         self.m_flFlashDuration = client_data["client.dll"]["classes"]["C_CSPlayerPawnBase"]["fields"]["m_flFlashDuration"]
         
         logging.info(f"{Fore.CYAN}Searching for cs2.exe process...")
-        if not self.pymem_handler.initialize_pymem():
-            input(f"{Fore.RED}Press Enter to exit...")
-            return
-
-        if not self.pymem_handler.get_client_module():
+        if not self.pymem_handler.initialize_pymem() or not self.pymem_handler.get_client_module():
             input(f"{Fore.RED}Press Enter to exit...")
             return
 
