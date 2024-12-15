@@ -2,10 +2,14 @@
    <img src="src/img/icon.png" alt="CS2 NoFlash" width="200" height="200">
    <h1>CS2 NoFlash</h1>
    <p>Your ultimate anti-flash tool for Counter-Strike 2</p>
+
+   ![Downloads](https://img.shields.io/github/downloads/jesewe/cs2-noflash/total?style=for-the-badge&logo=github&color=D5006D)
+   ![Platforms](https://img.shields.io/badge/platform-Windows-blue?style=for-the-badge&color=D5006D)
+   ![License](https://img.shields.io/github/license/jesewe/cs2-triggerbot?style=for-the-badge&color=D5006D)
+   
    <a href="#features"><strong>Features</strong></a> •
    <a href="#installation"><strong>Installation</strong></a> •
    <a href="#usage"><strong>Usage</strong></a> •
-   <a href="#customization"><strong>Customization</strong></a> •
    <a href="#troubleshooting"><strong>Troubleshooting</strong></a> •
    <a href="#contributing"><strong>Contributing</strong></a>
 </div>
